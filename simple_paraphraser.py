@@ -20,6 +20,11 @@ class SimpleParaphraser:
             'tools': ['utilities', 'instruments', 'mechanisms', 'applications'],
             'decisions': ['choices', 'judgments', 'determinations', 'selections'],
             'techniques': ['methods', 'approaches', 'practices', 'procedures'],
+            'cloud': ['remote', 'distributed', 'networked', 'web-based'],
+            'computing': ['processing', 'calculation', 'data processing', 'information technology'],
+            'intelligence': ['intellect', 'reasoning', 'insight', 'cognitive ability'],
+            'heuristics': ['guidelines', 'rules of thumb', 'practical methods', 'strategies'],
+            'workloads': ['tasks', 'operations', 'processes', 'jobs'],
             
             # Verbs
             'affect': ['influence', 'impact', 'modify', 'shape'],
@@ -28,6 +33,8 @@ class SimpleParaphraser:
             'failed': ['underperformed', 'fallen short', 'been inadequate', 'not succeeded'],
             'emerged': ['appeared', 'surfaced', 'arisen', 'come forth'],
             'optimizing': ['improving', 'enhancing', 'refining', 'maximizing'],
+            'allocate': ['assign', 'distribute', 'designate', 'apportion'],
+            'manage': ['handle', 'control', 'administer', 'oversee'],
             
             # Adjectives
             'complex': ['complicated', 'intricate', 'sophisticated', 'multifaceted'],
@@ -37,11 +44,13 @@ class SimpleParaphraser:
             'virtual': ['digital', 'simulated', 'online', 'computer-based'],
             'heterogeneous': ['diverse', 'varied', 'mixed', 'assorted'],
             'promising': ['potential', 'hopeful', 'encouraging', 'prospective'],
+            'artificial': ['synthetic', 'manufactured', 'man-made', 'simulated'],
             
             # Phrases
             'there are': ['we find', 'one can observe', 'it contains', 'we see'],
             'significantly affect': ['greatly impact', 'considerably influence', 'substantially change', 'notably alter'],
             'recently': ['lately', 'in recent times', 'not long ago', 'in the near past'],
+            'based on': ['founded on', 'derived from', 'grounded in', 'rooted in'],
         }
         
         # Sentence structure variations
@@ -50,7 +59,17 @@ class SimpleParaphraser:
             lambda s: f"{s} indeed.",
             lambda s: s.replace("There are", "We observe"),
             lambda s: s.replace("Recently,", "In recent developments,"),
+            lambda s: s.replace("that is", "which is"),
+            lambda s: s.replace("and", "as well as"),
             lambda s: s,  # sometimes keep original structure
+        ]
+        
+        # Phrase reorderings
+        self.reorderings = [
+            # "X and Y" -> "Y and X"
+            (r'(\w+) and (\w+)', r'\2 and \1'),
+            # "X, Y, and Z" -> "Z, X, and Y" 
+            (r'(\w+), (\w+), and (\w+)', r'\3, \1, and \2'),
         ]
         
     def paraphrase(self, text):
@@ -88,14 +107,27 @@ class SimpleParaphraser:
             # Reconstruct the sentence
             new_sentence = ' '.join(words)
             
-            # 2. Apply sentence structure variation (50% chance)
-            if random.random() < 0.5:
+            # 2. Apply sentence structure variation (40% chance)
+            if random.random() < 0.4:
                 new_sentence = random.choice(self.sentence_structures)(new_sentence)
+            
+            # 3. Apply phrase reordering (20% chance)
+            if random.random() < 0.2:
+                reordering = random.choice(self.reorderings)
+                new_sentence = re.sub(reordering[0], reordering[1], new_sentence)
             
             paraphrased_sentences.append(new_sentence)
         
         # Join sentences back together
         paraphrased_text = ' '.join(paraphrased_sentences)
+        
+        # Optional: Add/remove transition words (10% chance)
+        transition_words = ['however', 'furthermore', 'additionally', 'moreover', 'consequently']
+        if len(paraphrased_sentences) > 1 and random.random() < 0.1:
+            sentence_index = random.randint(1, len(paraphrased_sentences) - 1)
+            transition = random.choice(transition_words)
+            paraphrased_sentences[sentence_index] = f"{transition.capitalize()}, {paraphrased_sentences[sentence_index].lower()}"
+            paraphrased_text = ' '.join(paraphrased_sentences)
         
         return paraphrased_text
 
