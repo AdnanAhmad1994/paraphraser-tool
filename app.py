@@ -6,7 +6,7 @@ import importlib.util
 app = Flask(__name__)
 
 # Configuration
-PARAPHRASER_TYPE = "simple"  # "simple" or "ml" (for machine learning based)
+PARAPHRASER_TYPE = "ml"  # "simple" or "ml" (for machine learning based)
 
 def get_paraphraser():
     """
@@ -17,13 +17,15 @@ def get_paraphraser():
         try:
             # Try to import the ML-based paraphraser
             from paraphraser_example import paraphrase_text
+            print("Using ML-based paraphraser")
             return paraphrase_text
-        except ImportError:
-            print("Warning: ML dependencies not found. Falling back to simple paraphraser.")
+        except ImportError as e:
+            print(f"Warning: ML dependencies not found: {str(e)}. Falling back to simple paraphraser.")
             from simple_paraphraser import paraphrase_text
             return paraphrase_text
     else:
         # Use the simple rule-based paraphraser
+        print("Using simple rule-based paraphraser")
         from simple_paraphraser import paraphrase_text
         return paraphrase_text
 
