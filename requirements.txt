@@ -1,3 +1,4 @@
 flask==3.1.0
-transformers==4.52.3
-torch==2.7.0
+# Optional ML dependencies (not required for enhanced paraphraser)
+# transformers==4.52.3
+# torch==2.7.0

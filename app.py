@@ -1,17 +1,14 @@
 from flask import Flask, render_template, request, jsonify
 import traceback
-import os
-import importlib.util
 
 app = Flask(__name__)
 
 # Configuration
-PARAPHRASER_TYPE = "ml"  # "simple" or "ml" (for machine learning based)
+PARAPHRASER_TYPE = "enhanced"  # "simple", "enhanced", or "ml"
 
 def get_paraphraser():
     """
     Returns the appropriate paraphraser function based on configuration.
-    Falls back to simple paraphraser if ML dependencies are not available.
     """
     if PARAPHRASER_TYPE == "ml":
         try:
@@ -20,9 +17,14 @@ def get_paraphraser():
             print("Using ML-based paraphraser")
             return paraphrase_text
         except ImportError as e:
-            print(f"Warning: ML dependencies not found: {str(e)}. Falling back to simple paraphraser.")
-            from simple_paraphraser import paraphrase_text
+            print(f"Warning: ML dependencies not found: {str(e)}. Falling back to enhanced paraphraser.")
+            from enhanced_paraphraser import paraphrase_text
             return paraphrase_text
+    elif PARAPHRASER_TYPE == "enhanced":
+        # Use the enhanced rule-based paraphraser
+        print("Using enhanced rule-based paraphraser")
+        from enhanced_paraphraser import paraphrase_text
+        return paraphrase_text
     else:
         # Use the simple rule-based paraphraser
         print("Using simple rule-based paraphraser")
